@@ -202,7 +202,6 @@ void gamepad() {
     static uint8_t prev_pcf1 = 0xFF, prev_pcf2 = 0xFF;
     static byte prev_btn13 = HIGH;
 
-    // 2. Считываем текущие значения стиков
   int lx = processStick(LX_PIN, cfg.lx_off);
   int ly = processStick(LY_PIN, cfg.ly_off);
   int rx = processStick(RX_PIN, cfg.rx_off);
@@ -228,7 +227,6 @@ void gamepad() {
       bool down  = (DI1.p2 == LOW);
       bool right = (DI1.p3 == LOW);
 
-      // Логика хатки
       if (up && right) bleGamepad.setHat1(HAT_UP_RIGHT);
       else if (up && left) bleGamepad.setHat1(HAT_UP_LEFT);
       else if (down && right) bleGamepad.setHat1(HAT_DOWN_RIGHT);
@@ -239,7 +237,6 @@ void gamepad() {
       else if (right) bleGamepad.setHat1(HAT_RIGHT);
       else bleGamepad.setHat1(HAT_CENTERED); 
 
-      // Логика кнопок
       if (DI1.p4 == LOW) bleGamepad.press(BUTTON_9); else bleGamepad.release(BUTTON_9);
       if (DI1.p5 == LOW) bleGamepad.press(BUTTON_12); else bleGamepad.release(BUTTON_12);
       if (DI1.p6 == LOW) bleGamepad.press(BUTTON_7); else bleGamepad.release(BUTTON_7);
