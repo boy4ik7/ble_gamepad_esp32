@@ -1,0 +1,1 @@
+030032a002e50000abbb000000000000,Espressif 1.0.0,crc:a032,platform:Windows,a:b2,b:b1,x:b3,y:b0,dpleft:h0.8,dpright:h0.2,dpup:h0.1,dpdown:h0.4,leftx:a0,lefty:a1,leftstick:b10,rightx:a4,righty:a5,rightstick:b11,leftshoulder:b4,lefttrigger:b6,rightshoulder:b5,righttrigger:b7,back:b8,start:b9,guide:b12,steam:2,
