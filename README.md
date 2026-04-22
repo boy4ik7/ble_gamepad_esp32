@@ -1,6 +1,6 @@
 # ble_gamepad_esp32
 
-Use ESP32C3FN4 (C3 SuperMini) and 2 module on PCF8574T
+Use ESP32C3FN4 (C3 SuperMini) and 2 module on PCF8574T, 2 rsistors 100kOm (for voltage divider) and Capacitor 0.1uF (between the analog pin and ground, for measurement accuracy)
 
 <img src="https://github.com/boy4ik7/ble_gamepad_esp32/blob/main/image/image0.png?raw=true" width="400">
 
