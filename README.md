@@ -1,6 +1,6 @@
 # ble_gamepad_esp32
 
-Use esp32c3
+Use esp32c3 (super mini) and 2 module on PCF8574T
 
 <img src="https://github.com/boy4ik7/ble_gamepad_esp32/blob/main/image/image0.png?raw=true" width="400">
 
