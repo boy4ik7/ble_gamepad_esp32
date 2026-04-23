@@ -10,6 +10,8 @@ GTimer<millis> bat_tmr;
 #define I2C_SDA 8
 #define I2C_SCL 9
 
+#define numOfButtons 16
+#define numOfHatSwitches 1
 #define LX_PIN 0
 #define LY_PIN 1
 #define RX_PIN 2
@@ -25,7 +27,6 @@ struct Config {
 PCF8574 pcf1(0x20);
 PCF8574 pcf2(0x24);
 
-#define numOfButtons 13
 BleGamepad bleGamepad;
 BleGamepadConfiguration bleGamepadConfig;
 
@@ -41,26 +42,6 @@ float getBatteryVoltage() {
   return voltage;
 }
 
-/*
-int processStick(int pin) {
-  long sum = 0;
-  const int samples = 16; 
-
-  for (int i = 0; i < samples; i++) {
-    sum += analogRead(pin);
-  }
-  
-  int raw = sum / samples; 
-  int center = 2048; 
-  int deadzone = 160; 
-
-  if (abs(raw - center) < deadzone) {
-    return 16384; 
-  }
-  return map(raw, 0, 4095, 32767, 0);
-}
-*/
-
 int processStick(int pin, int offset) {
   long sum = 0;
   
@@ -69,7 +50,7 @@ int processStick(int pin, int offset) {
   }
   
   int raw = sum / 16; 
-  int deadzone = 100;
+  int deadzone = 300;
 
   if (abs(raw - offset) < deadzone) {
     return 16384; 
@@ -84,7 +65,6 @@ int processStick(int pin, int offset) {
 
   return constrain(result, 0, 32767);
 }
-
 /*
 void pcf_test() {
   PCF8574::DigitalInput DI1 = pcf1.digitalReadAll();
@@ -154,6 +134,43 @@ void test_sticks() {
   delay(1000);
 }
 
+void test_buttons() {
+  if (bleGamepad.isConnected()) {
+    Serial.println("Test in...");
+    Serial.println("10");
+    delay(1000);
+    Serial.println("9");
+    delay(1000);
+    Serial.println("8");
+    delay(1000);
+    Serial.println("7");
+    delay(1000);
+    Serial.println("6");
+    delay(1000);
+    Serial.println("5");
+    delay(1000);
+    Serial.println("4");
+    delay(1000);
+    Serial.println("3");
+    delay(1000);
+    Serial.println("2");
+    delay(1000);
+    Serial.println("1");
+    delay(1000);
+    for (int i = 1; i <= numOfButtons; i++) {
+      Serial.print("Push BUTTON_");
+      Serial.println(i);
+      bleGamepad.press(i);
+      bleGamepad.sendReport();
+      delay(3000);
+      bleGamepad.release(i);
+      bleGamepad.sendReport();
+      Serial.println("Release. Wait...");
+      delay(2000);
+    }
+    Serial.println("End.");
+  }
+}
 */
 
 void checkBattery() {
@@ -202,6 +219,7 @@ void gamepad() {
     static uint8_t prev_pcf1 = 0xFF, prev_pcf2 = 0xFF;
     static byte prev_btn13 = HIGH;
 
+    // 2. Считываем текущие значения стиков
   int lx = processStick(LX_PIN, cfg.lx_off);
   int ly = processStick(LY_PIN, cfg.ly_off);
   int rx = processStick(RX_PIN, cfg.rx_off);
@@ -217,16 +235,21 @@ void gamepad() {
     if (lx != prev_lx || ly != prev_ly || rx != prev_rx || ry != prev_ry || 
         current_pcf1 != prev_pcf1 || current_pcf2 != prev_pcf2 || current_btn13 != prev_btn13) 
     {
-
-      bleGamepad.setAxes(lx, ly, 0, 0, rx, ry, 0, 0);
+      //bleGamepad.setX(lx);
+      //bleGamepad.setY(ly);
+      //bleGamepad.setRX(rx);
+      //bleGamepad.setRY(ry);
+      bleGamepad.setAxes(lx, ly, 0, rx, ry, 0, 0, 0);
       //bleGamepad.setLeftThumb(lx, ly);
       //bleGamepad.setRightThumb(rx, ry);
+      //bleGamepad.setRightThumbAndroid(rx, ry);
       
       bool up    = (DI1.p0 == LOW);
       bool left  = (DI1.p1 == LOW);
       bool down  = (DI1.p2 == LOW);
       bool right = (DI1.p3 == LOW);
 
+      // Логика хатки
       if (up && right) bleGamepad.setHat1(HAT_UP_RIGHT);
       else if (up && left) bleGamepad.setHat1(HAT_UP_LEFT);
       else if (down && right) bleGamepad.setHat1(HAT_DOWN_RIGHT);
@@ -236,21 +259,26 @@ void gamepad() {
       else if (left) bleGamepad.setHat1(HAT_LEFT);
       else if (right) bleGamepad.setHat1(HAT_RIGHT);
       else bleGamepad.setHat1(HAT_CENTERED); 
-
-      if (DI1.p4 == LOW) bleGamepad.press(BUTTON_9); else bleGamepad.release(BUTTON_9);
-      if (DI1.p5 == LOW) bleGamepad.press(BUTTON_12); else bleGamepad.release(BUTTON_12);
-      if (DI1.p6 == LOW) bleGamepad.press(BUTTON_7); else bleGamepad.release(BUTTON_7);
-      if (DI1.p7 == LOW) bleGamepad.press(BUTTON_5); else bleGamepad.release(BUTTON_5);
       
-      if (DI2.p0 == LOW) bleGamepad.press(BUTTON_6); else bleGamepad.release(BUTTON_6);
-      if (DI2.p1 == LOW) bleGamepad.press(BUTTON_8); else bleGamepad.release(BUTTON_8);
-      if (DI2.p2 == LOW) bleGamepad.press(BUTTON_11); else bleGamepad.release(BUTTON_11);
-      if (DI2.p3 == LOW) bleGamepad.press(BUTTON_10); else bleGamepad.release(BUTTON_10);
-      if (DI2.p4 == LOW) bleGamepad.press(BUTTON_4); else bleGamepad.release(BUTTON_4);
-      if (DI2.p5 == LOW) bleGamepad.press(BUTTON_3); else bleGamepad.release(BUTTON_3);
-      if (DI2.p6 == LOW) bleGamepad.press(BUTTON_1); else bleGamepad.release(BUTTON_1);
-      if (DI2.p7 == LOW) bleGamepad.press(BUTTON_2); else bleGamepad.release(BUTTON_2);
-      if (current_btn13 == LOW) bleGamepad.press(BUTTON_13); else bleGamepad.release(BUTTON_13);
+      
+      // for gamepad
+      if (DI1.p7 == LOW) bleGamepad.press(BUTTON_7); else bleGamepad.release(BUTTON_7); //L1
+      if (DI1.p6 == LOW) bleGamepad.press(BUTTON_9); else bleGamepad.release(BUTTON_9); //L2
+      
+      if (DI2.p0 == LOW) bleGamepad.press(BUTTON_8); else bleGamepad.release(BUTTON_8); //R1
+      if (DI2.p1 == LOW) bleGamepad.press(BUTTON_10); else bleGamepad.release(BUTTON_10); //R2
+
+      if (DI2.p4 == LOW) bleGamepad.press(BUTTON_4); else bleGamepad.release(BUTTON_4); //X
+      if (DI2.p5 == LOW) bleGamepad.press(BUTTON_1); else bleGamepad.release(BUTTON_1); //A
+      if (DI2.p6 == LOW) bleGamepad.press(BUTTON_5); else bleGamepad.release(BUTTON_5); //Y
+      if (DI2.p7 == LOW) bleGamepad.press(BUTTON_2); else bleGamepad.release(BUTTON_2); //B
+
+      if (DI1.p4 == LOW) bleGamepad.press(BUTTON_11); else bleGamepad.release(BUTTON_11); //SELECT
+      if (DI2.p3 == LOW) bleGamepad.press(BUTTON_12); else bleGamepad.release(BUTTON_12); //START
+      if (current_btn13 == LOW) bleGamepad.press(BUTTON_13); else bleGamepad.release(BUTTON_13); //MODE
+      
+      if (DI2.p2 == LOW) bleGamepad.press(BUTTON_14); else bleGamepad.release(BUTTON_14); //THUML
+      if (DI1.p5 == LOW) bleGamepad.press(BUTTON_15); else bleGamepad.release(BUTTON_15); //THUMR
       
       bleGamepad.sendReport();
       //Serial.println("sendReport");
@@ -276,15 +304,17 @@ void setup()
   analogSetAttenuation(ADC_11db);
   pinMode(4, INPUT);
   pinMode(10, INPUT_PULLUP);
-  delay(100);
+  delay(50);
   Wire.begin(I2C_SDA, I2C_SCL);
   for(int i=0; i<8; i++) {
     pcf1.pinMode(i, INPUT_PULLUP);
     pcf2.pinMode(i, INPUT_PULLUP);
+    delay(10);
   }
   pcf1.begin();
+  delay(50);
   pcf2.begin();
-  delay(100);
+  delay(50);
   prefs.begin("settings", false);
   
   cfg.lx_off = prefs.getInt("lx", 0);
@@ -300,8 +330,26 @@ void setup()
   WiFi.mode(WIFI_OFF);
   Serial.println("Starting BLE work!");
   bleGamepadConfig.setAutoReport(false);
-  bleGamepadConfig.setHatSwitchCount(1);
   bleGamepadConfig.setButtonCount(numOfButtons);
+  bleGamepadConfig.setHatSwitchCount(numOfHatSwitches);
+  bleGamepadConfig.setControllerType(CONTROLLER_TYPE_GAMEPAD);
+  //lx ly
+  bleGamepadConfig.setIncludeXAxis(true);
+  bleGamepadConfig.setIncludeYAxis(true);
+  //bleGamepadConfig.setIncludeZAxis(true);
+  //rx ry 
+  bleGamepadConfig.setIncludeRxAxis(true);
+  bleGamepadConfig.setIncludeRyAxis(true);
+  //bleGamepadConfig.setIncludeRzAxis(true);
+  //lt rt
+  bleGamepadConfig.setIncludeZAxis(true);
+  bleGamepadConfig.setIncludeRzAxis(true);
+  //bleGamepadConfig.setIncludeSlider1(true);
+  //bleGamepadConfig.setIncludeSlider2(true);
+  //bleGamepadConfig.setVid(0x045E);
+  //bleGamepadConfig.setPid(0x02FD);
+  bleGamepadConfig.setVid(0xe502);
+  bleGamepadConfig.setPid(0xabcd);
   bleGamepad.begin(&bleGamepadConfig);
   bat_tmr.start();
 }
@@ -313,4 +361,5 @@ void loop()
   //i2c_scanner();
   //pcf_test();
   //test_sticks();
+  //test_buttons();
 }
