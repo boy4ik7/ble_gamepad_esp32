@@ -12,12 +12,15 @@ GTimer<millis> bat_tmr;
 
 #define numOfButtons 16
 #define numOfHatSwitches 1
+
 #define LX_PIN 0
 #define LY_PIN 1
 #define RX_PIN 2
 #define RY_PIN 3
 #define BAT_PIN 4
 #define BUTTON_13_PIN 10
+#define ADDRESS_PCF_1 0x20
+#define ADDRESS_PCF_2 0x24
 
 Preferences prefs;
 struct Config {
@@ -25,8 +28,8 @@ struct Config {
     int deadzone = 800; 
 } cfg;
 
-PCF8574 pcf1(0x20);
-PCF8574 pcf2(0x24);
+PCF8574 pcf1(ADDRESS_PCF_1);
+PCF8574 pcf2(ADDRESS_PCF_2);
 
 BleGamepad bleGamepad;
 BleGamepadConfiguration bleGamepadConfig;
@@ -66,20 +69,33 @@ int processStick(int pin, int offset) {
 
   return constrain(result, 0, 32767);
 }
+
 /*
 void pcf_test() {
   PCF8574::DigitalInput DI1 = pcf1.digitalReadAll();
   PCF8574::DigitalInput DI2 = pcf2.digitalReadAll();
 
-  Serial.print("PCF1 (0x20): [");
-  Serial.print(DI1.p0); Serial.print(DI1.p1); Serial.print(DI1.p2); Serial.print(DI1.p3);
-  Serial.print(DI1.p4); Serial.print(DI1.p5); Serial.print(DI1.p6); Serial.print(DI1.p7);
-  Serial.print("] ");
+  Serial.println("PCF1:");
+  Serial.print("p0="); Serial.print(DI1.p0);
+  Serial.print(" p1="); Serial.print(DI1.p1); 
+  Serial.print(" p2="); Serial.print(DI1.p2);
+  Serial.print(" p3="); Serial.print(DI1.p3);
+  Serial.print(" p4="); Serial.print(DI1.p4);
+  Serial.print(" p5="); Serial.print(DI1.p5); 
+  Serial.print(" p6="); Serial.print(DI1.p6); 
+  Serial.print(" p7="); Serial.print(DI1.p7);
+  Serial.println("");
 
-  Serial.print("PCF2 (0x24): [");
-  Serial.print(DI2.p0); Serial.print(DI2.p1); Serial.print(DI2.p2); Serial.print(DI2.p3);
-  Serial.print(DI2.p4); Serial.print(DI2.p5); Serial.print(DI2.p6); Serial.print(DI2.p7);
-  Serial.println("]");
+  Serial.println("PCF2:");
+  Serial.print("p0="); Serial.print(DI2.p0);
+  Serial.print(" p1="); Serial.print(DI2.p1);
+  Serial.print(" p2="); Serial.print(DI2.p2);
+  Serial.print(" p3="); Serial.print(DI2.p3);
+  Serial.print(" p4="); Serial.print(DI2.p4);
+  Serial.print(" p5="); Serial.print(DI2.p5);
+  Serial.print(" p5="); Serial.print(DI2.p6);
+  Serial.print(" p7="); Serial.print(DI2.p7);
+  Serial.println("");
 
   delay(200); 
 }
