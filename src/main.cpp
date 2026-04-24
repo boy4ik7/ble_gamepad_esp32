@@ -17,6 +17,7 @@ GTimer<millis> bat_tmr;
 #define RX_PIN 2
 #define RY_PIN 3
 #define BAT_PIN 4
+#define BUTTON_13_PIN 10
 
 Preferences prefs;
 struct Config {
@@ -227,7 +228,7 @@ void gamepad() {
     
     PCF8574::DigitalInput DI1 = pcf1.digitalReadAll();
     PCF8574::DigitalInput DI2 = pcf2.digitalReadAll();
-    byte current_btn13 = digitalRead(10);
+    byte current_btn13 = digitalRead(BUTTON_13_PIN);
 
     uint8_t current_pcf1 = (DI1.p7 << 7) | (DI1.p6 << 6) | (DI1.p5 << 5) | (DI1.p4 << 4) | (DI1.p3 << 3) | (DI1.p2 << 2) | (DI1.p1 << 1) | DI1.p0;
     uint8_t current_pcf2 = (DI2.p7 << 7) | (DI2.p6 << 6) | (DI2.p5 << 5) | (DI2.p4 << 4) | (DI2.p3 << 3) | (DI2.p2 << 2) | (DI2.p1 << 1) | DI2.p0;
