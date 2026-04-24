@@ -236,11 +236,10 @@ void gamepad() {
     static uint8_t prev_pcf1 = 0xFF, prev_pcf2 = 0xFF;
     static byte prev_btn13 = HIGH;
 
-    // 2. Считываем текущие значения стиков
-  int lx = processStick(LX_PIN, cfg.lx_off);
-  int ly = processStick(LY_PIN, cfg.ly_off);
-  int rx = processStick(RX_PIN, cfg.rx_off);
-  int ry = processStick(RY_PIN, cfg.ry_off);
+    int lx = processStick(LX_PIN, cfg.lx_off);
+    int ly = processStick(LY_PIN, cfg.ly_off);
+    int rx = processStick(RX_PIN, cfg.rx_off);
+    int ry = processStick(RY_PIN, cfg.ry_off);
     
     PCF8574::DigitalInput DI1 = pcf1.digitalReadAll();
     PCF8574::DigitalInput DI2 = pcf2.digitalReadAll();
