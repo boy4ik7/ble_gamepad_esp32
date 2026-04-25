@@ -308,7 +308,7 @@ void gamepad() {
       if (DI1.p5 == LOW) bleGamepad.press(BUTTON_15); else bleGamepad.release(BUTTON_15); //THUMR
       
       bleGamepad.sendReport();
-      Serial.println("sendReport");
+      //Serial.println("sendReport");
 
       prev_lx = lx; prev_ly = ly; prev_rx = rx; prev_ry = ry;
       prev_pcf1 = current_pcf1;
