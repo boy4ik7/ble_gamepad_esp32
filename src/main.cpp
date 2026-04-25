@@ -100,7 +100,7 @@ void pcf_test() {
   delay(200); 
 }
 
-void i2c_scanner(){
+void i2c_scanner() {
     byte error, address;
     int nDevices;
  
@@ -230,8 +230,19 @@ void calibrateSticks() {
 }
 
 void gamepad() {
-  if (bleGamepad.isConnected())
-  {
+  if (bleGamepad.isConnected()) {
+    /*
+    if (bleGamepad.isOutputReceived()) {
+      uint8_t* buffer = bleGamepad.getOutputBuffer();
+      Serial.print("Receive: ");
+      
+      for (int i = 0; i < 64; i++) {
+        Serial.printf("0x%X ",buffer[i]);
+      }
+      
+      Serial.println("");
+    }
+    */
     static int prev_lx = -1, prev_ly = -1, prev_rx = -1, prev_ry = -1;
     static uint8_t prev_pcf1 = 0xFF, prev_pcf2 = 0xFF;
     static byte prev_btn13 = HIGH;
@@ -297,7 +308,7 @@ void gamepad() {
       if (DI1.p5 == LOW) bleGamepad.press(BUTTON_15); else bleGamepad.release(BUTTON_15); //THUMR
       
       bleGamepad.sendReport();
-      //Serial.println("sendReport");
+      Serial.println("sendReport");
 
       prev_lx = lx; prev_ly = ly; prev_rx = rx; prev_ry = ry;
       prev_pcf1 = current_pcf1;
@@ -362,10 +373,11 @@ void setup()
   bleGamepadConfig.setIncludeRzAxis(true);
   //bleGamepadConfig.setIncludeSlider1(true);
   //bleGamepadConfig.setIncludeSlider2(true);
-  //bleGamepadConfig.setVid(0x045E);
-  //bleGamepadConfig.setPid(0x02FD);
   bleGamepadConfig.setVid(0xe502);
   bleGamepadConfig.setPid(0xabcd);
+  //for OutputReceived
+  //bleGamepadConfig.setHidReportId(0x05);
+  //bleGamepadConfig.setVid(0x1234);
   bleGamepad.begin(&bleGamepadConfig);
   bat_tmr.start();
 }
